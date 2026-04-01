@@ -19,6 +19,12 @@ export function Navbar() {
             <Link to="/" className="hover:text-blue-400 transition-colors">
               Home
             </Link>
+            
+            {/* NEW: Network Link Added Here */}
+            <Link to="/network" className="hover:text-blue-400 transition-colors">
+              Network
+            </Link>
+
             <Link to="/createPost" className="hover:text-blue-400 transition-colors">
               Add Post
             </Link>

@@ -9,6 +9,9 @@ import CommunityDetails from './pages/CommunityDetails'
 import Profile from './pages/Profile'
 import { AppLayout } from './components/ui/AppLayout'
 import CreateCommunity from './pages/CreateCommunity'
+import ChatRoom from './pages/ChatRoom'
+import Network from './pages/Network'
+import UserProfile from './pages/UserProfile'
 
 
 function App() {
@@ -25,6 +28,9 @@ function App() {
       <Route path='/community-details' element ={<CommunityDetails></CommunityDetails>}></Route>
       <Route path='/profile' element ={<Profile></Profile>}></Route>
       <Route path='/create-community' element ={<CreateCommunity></CreateCommunity>}></Route>
+      <Route path="/communities/:slug" element={<ChatRoom />} />
+      <Route path="/network" element={<Network />} />
+      <Route path="/user/:username" element={<UserProfile />} />
       </Route>
     </Routes>
    
