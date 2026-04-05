@@ -7,7 +7,7 @@ import { useUser, useSession } from "@clerk/clerk-react"
 import { createClient } from "@supabase/supabase-js"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import { Users, Info, Hash } from "lucide-react"
+import { Users, Info, Hash, Loader2, Globe, ArrowLeft } from "lucide-react"
 
 function CreateCommunity() {
   const [name, setName] = useState("");
@@ -68,7 +68,7 @@ function CreateCommunity() {
       navigate(`/communities/${slug}`); 
       
     } catch (error) {
-      console.error(error);
+      console.error(error); // Keep VS Code happy
       toast.error(error.message || "Failed to create community.");
     } finally {
       setIsSubmitting(false);
@@ -76,64 +76,85 @@ function CreateCommunity() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto pt-10 px-4 pb-20">
-      <Card className="p-8 border-zinc-200 shadow-xl rounded-2xl bg-white">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-blue-50 rounded-xl">
-            <Users className="w-6 h-6 text-blue-600" />
+    <div className="min-h-screen bg-[#f8fafc] pt-12 pb-20 px-4">
+      <Card className="max-w-xl mx-auto bg-white border border-slate-200/50 shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden">
+        
+        {/* Subtle top decoration */}
+        <div className="h-1.5 bg-gradient-to-r from-blue-600 via-sky-400 to-indigo-500 w-full opacity-80" />
+        
+        <div className="p-8 sm:p-10">
+          {/* Header Section */}
+          <div className="mb-10 flex flex-col items-center text-center">
+            <div className="p-4 bg-blue-50 rounded-2xl mb-4 shadow-sm border border-blue-100/50">
+              <Users className="w-8 h-8 text-blue-600" />
+            </div>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Start a Community</h1>
+            <p className="text-slate-500 text-sm font-medium mt-2 max-w-[280px]">
+              Create a hub for your club, hostel, or interest group.
+            </p>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-zinc-900">Start a Community</h1>
-            <p className="text-sm text-zinc-500">Create a space for your club, hostel, or interest group.</p>
-          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Community Name Field */}
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1 flex items-center gap-2">
+                <Hash className="w-3 h-3" /> Community Name
+              </label>
+              <Input 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                placeholder="e.g. Web Dev Club, Hostel-9" 
+                required
+                maxLength={30}
+                className="h-12 text-[15px] bg-slate-50/30 border-slate-100 rounded-2xl focus-visible:ring-blue-500/10 focus-visible:border-blue-400 transition-all text-slate-800 placeholder:text-slate-400"
+              />
+            </div>
+
+            {/* Description Field */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center px-1">
+                <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
+                  <Info className="w-3 h-3" /> Description
+                </label>
+                <span className="text-[10px] font-bold text-slate-300">
+                  {description.length}/200
+                </span>
+              </div>
+              <Textarea 
+                value={description} 
+                onChange={(e) => setDescription(e.target.value)} 
+                placeholder="Tell other students why they should join your circle..." 
+                className="min-h-[120px] text-[15px] bg-slate-50/30 border-slate-100 rounded-2xl focus-visible:ring-blue-500/10 focus-visible:border-blue-400 transition-all resize-none p-5 text-slate-800 placeholder:text-slate-400"
+                maxLength={200}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <Button 
+                type="button" 
+                variant="ghost" 
+                onClick={() => navigate(-1)}
+                className="flex-1 h-12 rounded-full text-slate-500 font-bold hover:bg-slate-50 active:scale-95 transition-all flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" /> Cancel
+              </Button>
+              <Button 
+                disabled={isSubmitting || !name.trim()} 
+                className="flex-[2] h-12 rounded-full bg-slate-900 hover:bg-blue-600 text-white font-bold shadow-lg shadow-slate-200 transition-all active:scale-95 disabled:opacity-30 group"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                    <span>Create Community</span>
+                  </div>
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-semibold flex items-center gap-2">
-              <Hash className="w-4 h-4 text-zinc-400" /> Community Name
-            </label>
-            <Input 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
-              placeholder="e.g. Web Dev Club, Hostel-9, Football" 
-              required
-              className="rounded-xl border-zinc-200 focus:ring-blue-500"
-              maxLength={30}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-semibold flex items-center gap-2">
-              <Info className="w-4 h-4 text-zinc-400" /> Description
-            </label>
-            <Textarea 
-              value={description} 
-              onChange={(e) => setDescription(e.target.value)} 
-              placeholder="What is this community for? Tell other students why they should join." 
-              className="min-h-[120px] rounded-xl border-zinc-200 focus:ring-blue-500 resize-none"
-              maxLength={200}
-            />
-            <p className="text-[10px] text-right text-zinc-400">{description.length}/200</p>
-          </div>
-
-          <div className="pt-4 flex gap-3">
-            <Button 
-              type="button" 
-              variant="ghost" 
-              onClick={() => navigate(-1)}
-              className="flex-1 rounded-xl text-zinc-500 hover:bg-zinc-50"
-            >
-              Cancel
-            </Button>
-            <Button 
-              disabled={isSubmitting || !name.trim()} 
-              className="flex-[2] bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all active:scale-95"
-            >
-              {isSubmitting ? "Generating Space..." : "Create Community"}
-            </Button>
-          </div>
-        </form>
       </Card>
     </div>
   )

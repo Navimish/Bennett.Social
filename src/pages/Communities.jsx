@@ -6,11 +6,11 @@ import { useUser, useSession } from "@clerk/clerk-react"
 import { createClient } from "@supabase/supabase-js"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import { Users, Plus, MessageSquare, Check } from "lucide-react" 
+import { Users, Plus, MessageSquare, Check, Loader2, Compass } from "lucide-react" 
 
 function Communities() {
   const [communities, setCommunities] = useState([]);
-  const [joinedIds, setJoinedIds] = useState(new Set()); // Tracks communities the user is in
+  const [joinedIds, setJoinedIds] = useState(new Set()); 
   const [loading, setLoading] = useState(true);
   
   const { user, isSignedIn } = useUser();
@@ -21,7 +21,6 @@ function Communities() {
     fetchCommunities();
   }, []);
 
-  // Fetch memberships whenever the user logs in or the session is ready
   useEffect(() => {
     if (isSignedIn && session) {
       fetchUserMemberships();
@@ -61,7 +60,6 @@ function Communities() {
 
       if (error) throw error;
 
-      // Store IDs in a Set for fast and easy lookups
       const myCommunityIds = new Set(data.map(membership => membership.community_id));
       setJoinedIds(myCommunityIds);
     } catch (error) {
@@ -77,7 +75,6 @@ function Communities() {
 
     try {
       const supabaseToken = await session.getToken({ template: 'supabase' });
-      
       const authenticatedSupabase = createClient(
         import.meta.env.VITE_SUPABASE_URL,
         import.meta.env.VITE_SUPABASE_ANON_KEY,
@@ -97,10 +94,7 @@ function Communities() {
       }
 
       toast.success("Joined successfully!");
-      
-      // Update local state instantly so the button changes to "Joined" without reloading
       setJoinedIds(prev => new Set(prev).add(communityId));
-      
       navigate(`/communities/${slug}`);
     } catch (error) {
       console.error(error);
@@ -109,77 +103,85 @@ function Communities() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto pt-10 px-4 pb-20">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-zinc-900">Communities</h1>
-          <p className="text-zinc-500">Find your tribe at Bennett University</p>
+    <div className="min-h-screen bg-[#f8fafc] pb-20">
+      {/* Header Section */}
+      <div className="bg-white border-b border-slate-200/60 pt-12 pb-10 px-4">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Communities</h1>
+            <p className="text-slate-500 font-medium mt-1">Find your tribe and inner circle at Bennett University.</p>
+          </div>
+          <Button 
+            onClick={() => navigate('/create-community')}
+            className="h-12 bg-slate-900 hover:bg-blue-600 text-white rounded-full px-8 font-bold shadow-lg shadow-slate-200 transition-all active:scale-95 group"
+          >
+            <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" /> Start a Community
+          </Button>
         </div>
-        <Button 
-          onClick={() => navigate('/create-community')}
-          className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6"
-        >
-          <Plus className="w-4 h-4 mr-2" /> Start a Community
-        </Button>
       </div>
 
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 bg-zinc-100 animate-pulse rounded-2xl" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {communities.map((comm) => {
-            const hasJoined = joinedIds.has(comm.id);
+      <div className="max-w-6xl mx-auto px-4 mt-12">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-64 bg-white border border-slate-100 animate-pulse rounded-[2rem]" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {communities.map((comm) => {
+              const hasJoined = joinedIds.has(comm.id);
 
-            return (
-              <Card key={comm.id} className="p-6 hover:shadow-lg transition-shadow border-zinc-200 rounded-2xl flex flex-col justify-between">
-                <div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4 text-blue-600">
-                    <Users className="w-6 h-6" />
-                  </div>
-                  <h2 className="text-xl font-bold text-zinc-900 mb-2">{comm.name}</h2>
-                  <p className="text-sm text-zinc-500 line-clamp-3 mb-6">
-                    {comm.description || "No description provided."}
-                  </p>
-                </div>
-
-                <div className="flex gap-2 mt-auto">
-                  {/* Conditional Join / Joined Button */}
-                  {hasJoined ? (
-                    <div className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 text-sm font-medium py-2">
-                      <Check className="w-4 h-4 text-green-500" /> Joined
+              return (
+                <Card key={comm.id} className="group p-8 bg-white border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.06)] hover:-translate-y-1.5 transition-all duration-500 rounded-[2.5rem] flex flex-col">
+                  <div className="flex-1">
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 text-blue-600 border border-blue-100/50 transition-transform group-hover:scale-110">
+                      <Users className="w-7 h-7" />
                     </div>
-                  ) : (
-                    <Button 
-                      onClick={() => handleJoin(comm.id, comm.slug)}
-                      variant="outline" 
-                      className="cursor-pointer flex-1 rounded-xl border-zinc-200 hover:bg-blue-50 hover:text-blue-600"
-                    >
-                      Join
-                    </Button>
-                  )}
-                  
-                  <Button 
-                    onClick={() => navigate(`/communities/${comm.slug}`)}
-                    className="cursor-pointer flex-1 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl"
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" /> View
-                  </Button>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+                    <h2 className="text-xl font-black text-slate-900 mb-3 group-hover:text-blue-600 transition-colors tracking-tight">{comm.name}</h2>
+                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-3 mb-8 font-medium">
+                      {comm.description || "A space for Bennett students to connect, share, and grow together."}
+                    </p>
+                  </div>
 
-      {!loading && communities.length === 0 && (
-        <div className="text-center py-20 bg-zinc-50 rounded-3xl border-2 border-dashed border-zinc-200">
-          <p className="text-zinc-500">No communities found. Be the first to start one!</p>
-        </div>
-      )}
+                  <div className="flex gap-3 mt-auto">
+                    {hasJoined ? (
+                      <div className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-slate-50 border border-slate-100 text-slate-400 text-xs font-black uppercase tracking-widest py-3">
+                        <Check className="w-4 h-4 text-green-500" /> Joined
+                      </div>
+                    ) : (
+                      <Button 
+                        onClick={() => handleJoin(comm.id, comm.slug)}
+                        variant="outline" 
+                        className="flex-1 h-11 rounded-2xl border-slate-200 text-slate-600 font-bold hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 active:scale-95 transition-all"
+                      >
+                        Join
+                      </Button>
+                    )}
+                    
+                    <Button 
+                      onClick={() => navigate(`/communities/${comm.slug}`)}
+                      className="flex-1 h-11 bg-slate-900 hover:bg-blue-600 text-white rounded-2xl font-bold active:scale-95 transition-all flex items-center justify-center gap-2 shadow-md shadow-slate-100"
+                    >
+                      <MessageSquare className="w-4 h-4" /> View
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        {!loading && communities.length === 0 && (
+          <div className="text-center py-24 bg-white/50 rounded-[3rem] border-2 border-dashed border-slate-200">
+            <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100">
+                <Compass className="w-8 h-8 text-slate-300" />
+            </div>
+            <p className="text-slate-900 font-black uppercase tracking-widest text-sm">No communities yet</p>
+            <p className="text-slate-500 text-sm mt-1">Be the pioneer and start the first one!</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
