@@ -6,6 +6,10 @@ import { createClient } from "@supabase/supabase-js";
 import { Bell, Heart, MessageCircle, CheckCheck, MessageSquare, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+// IMPORTANT: Import your new MobileNav here. 
+// Adjust the path if you saved it in a different folder.
+import { MobileNav } from './MobileNav.jsx'; 
+
 // --- Inbox Icon Component ---
 export function InboxIcon() {
   const { user, isSignedIn } = useUser();
@@ -210,15 +214,17 @@ export function NotificationBell() {
 export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/70 backdrop-blur-xl hover:shadow-sm hover:shadow-zinc-100 transition-all duration-300">
-      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
         
         {/* --- LOGO, SIGNATURE & GLOW SECTION --- */}
-        <div className="flex-1 flex items-center gap-3">
+        <div className="flex-1 flex items-center gap-2 md:gap-3">
+          
+          {/* MOBILE HAMBURGER MENU */}
+          <MobileNav />
+
           {/* Custom SVG Logo Bubble with Restore GLOW effect */}
           <div className="w-9 h-9 relative flex-shrink-0 group">
-            {/* --- RESTORED GLOW: Interacting Drop Shadow --- */}
             <div className="absolute inset-0 bg-blue-600 rounded-xl rotate-[-10deg] shadow-[0_4px_14px_rgba(37,99,235,0.4)] group-hover:rotate-0 group-hover:shadow-[0_6px_20px_rgba(37,99,235,0.6)] transition-all duration-300"></div>
-            {/* SVG forming 'B' and social bubble shape */}
             <svg 
               viewBox="0 0 100 100" 
               className="absolute inset-2 w-5 h-5 fill-white group-hover:scale-105 transition-transform"
@@ -227,7 +233,6 @@ export function Navbar() {
               <rect x="20" y="15" width="15" height="70" rx="5"/>
               <path d="M35 15 h30 a20 20 0 0 1 0 40 h-30 z"/>
               <path d="M35 45 h35 a22 22 0 0 1 0 44 h-35 z" opacity="0.8"/>
-              {/* Pulsing connection dot symbolizes 'social' glow */}
               <circle cx="85" cy="25" r="8" fill="#93C5FD" className="animate-pulse" />
               <circle cx="85" cy="75" r="8" fill="#DBEAFE"/>
             </svg>
@@ -241,14 +246,14 @@ export function Navbar() {
               href="https://www.linkedin.com/in/navneet-mishra-320081249/" 
               target="_blank" 
               rel="noreferrer"
-              className="text-[9px] font-black uppercase tracking-[0.25em] text-zinc-400 hover:text-blue-600 transition-colors mt-1 ml-0.5"
+              className="hidden sm:block text-[9px] font-black uppercase tracking-[0.25em] text-zinc-400 hover:text-blue-600 transition-colors mt-1 ml-0.5"
             >
               by Navneet Mishra
             </a>
           </div>
         </div>
 
-        {/* Center Navigation Links */}
+        {/* Center Navigation Links (Hidden on Mobile) */}
         <div className="hidden md:flex items-center gap-1">
           {[
             { label: 'Home', path: '/' },
@@ -270,7 +275,7 @@ export function Navbar() {
         </div>
 
         {/* Right Side Actions */}
-        <div className="flex-1 flex justify-end items-center gap-3">
+        <div className="flex-1 flex justify-end items-center gap-2 md:gap-3">
           <SignedOut>
             <SignInButton mode="modal">
               <Button variant="ghost" className="text-sm font-bold text-zinc-700">Sign In</Button>
@@ -278,16 +283,16 @@ export function Navbar() {
           </SignedOut>
           
           <SignedIn>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0 md:gap-1">
               <InboxIcon />
               <NotificationBell />
             </div>
             
-            <div className="w-px h-6 bg-zinc-200 mx-2 hidden sm:block" />
+            <div className="w-px h-6 bg-zinc-200 mx-1 md:mx-2 hidden sm:block" />
             
             <Link 
               to="/profile" 
-              className="hidden sm:block text-sm font-bold text-zinc-700 hover:text-blue-600 transition-colors mr-1"
+              className="hidden md:block text-sm font-bold text-zinc-700 hover:text-blue-600 transition-colors mr-1"
             >
               Profile
             </Link>
@@ -295,7 +300,7 @@ export function Navbar() {
             <UserButton 
               appearance={{
                 elements: {
-                  userButtonAvatarBox: "w-9 h-9 border-2 border-white shadow-sm hover:scale-105 transition-transform"
+                  userButtonAvatarBox: "w-8 h-8 md:w-9 md:h-9 border-2 border-white shadow-sm hover:scale-105 transition-transform"
                 }
               }}
               afterSignOutUrl="/" 
